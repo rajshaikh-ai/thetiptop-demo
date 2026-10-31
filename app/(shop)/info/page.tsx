@@ -5,6 +5,7 @@ import { resetDemo, useDb } from '@/lib/db';
 import { cartStore, meStore } from '@/lib/cart';
 import { formatINR } from '@/lib/pricing';
 import { to12h } from '@/components/ShopChrome';
+import { DISH_PHOTOS } from '@/lib/dishPhotos';
 import { IconClock, IconPhone, IconPin } from '@/components/icons';
 
 const FAQ = [
@@ -49,9 +50,24 @@ export default function InfoPage() {
         <p className="text-muted">Privacy policy, terms of service, and refund and cancellation policy pages go here in the live site. Razorpay needs all three before it activates payments.</p>
       </section>
 
+      <details className="card p-4 text-sm">
+        <summary className="cursor-pointer font-extrabold">Photo credits</summary>
+        <p className="pt-2 text-muted">Dish photos in this demo are representative sample photos from Wikimedia Commons, used under the licences shown and cropped to fit. They will be replaced with The TipTop&apos;s own photos before launch.</p>
+        <ul className="flex flex-col gap-1.5 pt-2 text-xs text-muted">
+          {db.products.filter((p) => DISH_PHOTOS[p.id]).map((p) => {
+            const c = DISH_PHOTOS[p.id];
+            return (
+              <li key={p.id}>
+                <strong className="text-ink">{p.name}</strong>: <a href={c.page} target="_blank" rel="noopener noreferrer" className="underline">{c.title}</a> by {c.author}, {c.license}
+              </li>
+            );
+          })}
+        </ul>
+      </details>
+
       <section className="card flex flex-col gap-2 border-dashed p-4 text-sm">
         <h2 className="font-extrabold">About this demo</h2>
-        <p className="text-muted">This is a client preview. The menu, prices and orders are sample data and payments are simulated in test mode. Orders are stored in this browser, so the customer site and the owner dashboard update each other live when both are open on the same device.</p>
+        <p className="text-muted">This is a client preview. The menu, prices, photos and orders are sample data and payments are simulated in test mode. Orders are stored in this browser, so the customer site and the owner dashboard update each other live when both are open on the same device.</p>
         <div className="flex flex-wrap gap-2 pt-1">
           <Link href="/admin/" className="btn-ghost h-11 text-sm">Open owner dashboard</Link>
           <button

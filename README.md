@@ -24,7 +24,7 @@ Reset everything from **Settings → Reset demo data** (dashboard) or **Info →
 
 ### Demo limits
 - Orders are stored in the browser, so the customer site and dashboard update each other live only on **the same device and browser**. In production a database (Supabase, Mumbai region) syncs every phone instantly. Every data function in `lib/db.ts` is written to be swapped for that.
-- Dish pictures are illustrated placeholders until the owner's real photos are uploaded. You can upload a photo from Menu → edit dish to try it.
+- Dish photos are representative, openly licensed sample photos from Wikimedia Commons (credits on the Info page and in `lib/dishPhotos.ts`), cropped to 800×600 WebP in `public/dishes/`. Replace them with The TipTop's own photos before launch; the owner can also upload a photo from Menu → edit dish.
 - The phone number and address on the Info page are placeholders.
 
 ## What's inside

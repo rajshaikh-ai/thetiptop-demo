@@ -95,7 +95,7 @@ export default function HomePage() {
             const p = db.products.find((x) => x.categoryId === c.id && !x.isArchived)!;
             return (
               <Link key={c.id} href={`/menu/?cat=${c.id}`} className="flex w-[84px] shrink-0 flex-col items-center gap-1.5 text-center">
-                <DishImage product={p} className="h-[76px] w-[76px]" rounded="rounded-full" />
+                <DishImage product={p} className="h-[76px] w-[76px]" rounded="rounded-full" priority />
                 <span className="text-xs font-semibold leading-tight">{c.name}</span>
               </Link>
             );

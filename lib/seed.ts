@@ -1,3 +1,4 @@
+import { dishPhoto } from './dishPhotos';
 import type { Category, Coupon, DbState, Order, OrderStatus, Product, Settings } from './types';
 
 // SAMPLE DATA ONLY. Dish names and the lowest prices come from the current
@@ -77,6 +78,7 @@ const products: Product[] = raw.map((p, i) => ({
   isBestseller: !!p.best,
   isAvailable: true,
   isArchived: false,
+  image: dishPhoto(p.id),
   variants: p.v.map(([label, price]) => ({
     id: label.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
     label,
@@ -112,7 +114,7 @@ const settings: Settings = {
   adminPin: '1234',
 };
 
-export const SEED_VERSION = 5;
+export const SEED_VERSION = 6;
 
 // Sample orders so the owner dashboard has realistic numbers on first open.
 // Times are relative to "now" when the demo data is created or reset.
