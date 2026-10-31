@@ -40,7 +40,7 @@ const strip = (s = '') => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
 async function commons(term) {
   const u = new URL('https://commons.wikimedia.org/w/api.php');
   Object.entries({ action: 'query', format: 'json', generator: 'search', gsrsearch: `${term} filetype:bitmap`, gsrnamespace: '6', gsrlimit: '8', prop: 'imageinfo', iiprop: 'url|extmetadata|size', iiurlwidth: '1200' }).forEach(([k, v]) => u.searchParams.set(k, v));
-  const r = await fetch(u, { headers: { 'User-Agent': UA } });
+  const r = await fetch(u, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(20000) });
   const j = await r.json();
   return Object.values(j.query?.pages || {}).sort((a, b) => a.index - b.index).map((p) => {
     const ii = p.imageinfo?.[0] || {};
@@ -51,7 +51,7 @@ async function commons(term) {
 
 async function openverse(term) {
   const u = `https://api.openverse.org/v1/images/?q=${encodeURIComponent(term)}&license_type=commercial,modification&page_size=6&mature=false`;
-  const r = await fetch(u, { headers: { 'User-Agent': UA } });
+  const r = await fetch(u, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(20000) });
   if (!r.ok) return [];
   const j = await r.json();
   return (j.results || []).map((x) => ({ source: `Openverse (${x.source})`, title: x.title, url: x.url, page: x.foreign_landing_url, license: `CC ${x.license.toUpperCase()} ${x.license_version || ''}`.trim(), author: x.creator || 'Unknown', w: x.width, h: x.height }));
@@ -81,8 +81,9 @@ for (const [id, terms] of Object.entries(DISHES)) {
     if (/nc|nd/i.test(lic) || !(/cc0|pdm|public domain|cc by|cc-by|by-sa|^cc /i.test(lic))) continue;
     if (c.w && c.h && Math.min(c.w, c.h) < 480) continue;
     try {
-      const r = await fetch(c.url, { headers: { 'User-Agent': UA } });
+      const r = await fetch(c.url, { headers: { 'User-Agent': UA }, signal: AbortSignal.timeout(25000) });
       if (!r.ok) continue;
+      if (Number(r.headers.get('content-length') || 0) > 15e6) continue;
       const buf = Buffer.from(await r.arrayBuffer());
       const n = kept.length;
       await sharp(buf).rotate().resize({ width: 1000, height: 1000, fit: 'inside', withoutEnlargement: true }).jpeg({ quality: 82 }).toFile(`candidates/${id}-${n}.jpg`);
@@ -91,5 +92,6 @@ for (const [id, terms] of Object.entries(DISHES)) {
   }
   out[id] = kept;
   console.log(id, kept.length);
+  await fs.writeFile('candidates/candidates.json', JSON.stringify(out, null, 2));
 }
 await fs.writeFile('candidates/candidates.json', JSON.stringify(out, null, 2));
