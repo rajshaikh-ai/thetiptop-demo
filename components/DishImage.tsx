@@ -1,8 +1,12 @@
+'use client';
+
+import { useState } from 'react';
 import type { Product } from '@/lib/types';
 
-// Until the real photo shoot, each dish gets a warm illustrated placeholder
-// (a plate on a tinted ground) instead of misleading stock photography.
-// The owner can upload a real photo from the admin menu manager.
+// Dishes show a photo (sample photos in public/dishes, or one the owner
+// uploads from the admin). Photos are 800x600 and always shown with
+// object-cover, so every card has the same shape. If a photo is missing or
+// fails to load, a warm illustrated placeholder is shown instead.
 
 const tints: Record<string, [string, string, string]> = {
   biryani: ['#F6D9A8', '#E9B872', '#B86B1F'],
@@ -16,10 +20,22 @@ const tints: Record<string, [string, string, string]> = {
   thali: ['#EFDCC4', '#D2AE80', '#7A5126'],
 };
 
-export function DishImage({ product, className = '', rounded = 'rounded-xl' }: { product: Product; className?: string; rounded?: string }) {
-  if (product.image) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img src={product.image} alt={product.name} className={`object-cover ${rounded} ${className}`} />;
+export function DishImage({ product, className = '', rounded = 'rounded-xl', priority = false }: { product: Product; className?: string; rounded?: string; priority?: boolean }) {
+  const [failed, setFailed] = useState<string | null>(null);
+  if (product.image && failed !== product.image) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={product.image}
+        alt={product.name}
+        width={800}
+        height={600}
+        loading={priority ? 'eager' : 'lazy'}
+        decoding="async"
+        onError={() => setFailed(product.image!)}
+        className={`bg-sand object-cover ${rounded} ${className}`}
+      />
+    );
   }
   const [bg, mid, ink] = tints[product.categoryId] || tints.thali;
   const initials = product.name

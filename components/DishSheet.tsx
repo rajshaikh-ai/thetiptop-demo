@@ -43,7 +43,7 @@ export function DishSheet({ product, onClose, onAdded }: { product: Product | nu
   return (
     <Sheet open={!!product} onClose={onClose} label={`${product.name} options`}>
       <div className="overflow-y-auto">
-        <DishImage product={product} className="h-52 w-full" rounded="rounded-none" />
+        <DishImage product={product} className="h-52 w-full" rounded="rounded-none" priority />
         <div className="flex flex-col gap-4 p-4">
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
